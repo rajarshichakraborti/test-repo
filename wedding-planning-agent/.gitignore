@@ -1,0 +1,15 @@
+# Do not commit actual wedding data or credentials
+data.json
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.csv
+*.xlsx
+*.pdf
+exports/
+backups/
+__pycache__/
+*.pyc
+.DS_Store
