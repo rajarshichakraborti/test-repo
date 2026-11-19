@@ -1,0 +1,58 @@
+{
+  "wedding": {
+    "title": "Example Wedding",
+    "date": "2027-02-14"
+  },
+  "settings": {
+    "instinct_whatsapp_number": ""
+  },
+  "events": [
+    {
+      "id": "event-001",
+      "title": "Reception",
+      "date": "2027-02-14",
+      "venue": "Venue TBD"
+    }
+  ],
+  "guests": [
+    {
+      "id": "guest-001",
+      "name": "Sample Guest",
+      "phone": "",
+      "rsvp": "pending",
+      "travel_status": "not booked",
+      "accommodation_id": "stay-001"
+    }
+  ],
+  "accommodations": [
+    {
+      "id": "stay-001",
+      "property": "Example Hotel",
+      "status": "tentative"
+    }
+  ],
+  "flights": [
+    {
+      "id": "flight-001",
+      "guest_id": "guest-001",
+      "status": "not booked"
+    }
+  ],
+  "vendors": [
+    {
+      "id": "vendor-001",
+      "category": "Catering",
+      "name": "Example Caterer",
+      "status": "shortlisted"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "Finalize menu",
+      "owner": "Wedding team",
+      "due": "2027-01-15",
+      "status": "open"
+    }
+  ]
+}
