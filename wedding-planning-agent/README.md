@@ -1,58 +1,70 @@
 # Wedding Planning Agent
 
-An open-source, privacy-first command-line wedding planning assistant. Organize guests, travel, accommodation, vendors, events, and message drafts without publishing anyone's private information.
+An open-source, **local-first** wedding planning assistant, including optional WhatsApp/Instinct message handoffs. It can organize guests, RSVPs, flights, accommodation, vendors, events, tasks, and draft personalized communication. All example records are **fictional**.
+
+**Privacy commitment:** This public repository contains no real wedding information, guest names, phone numbers, flight itineraries, booking references, addresses, family records, menus from private events, or account credentials. Store your real information only in a private local `data.json` file, which is ignored by Git.
 
 ## Quick start
 
-Requires Python 3.10+; no third-party packages.
+Requires Python 3.10+ and no extra Python packages.
 
 ```bash
 git clone https://github.com/rajarshichakraborti/test-repo.git
 cd test-repo/wedding-planning-agent
 cp data.example.json data.json
 python3 wedding_agent.py summary
-python3 wedding_agent.py guests
-python3 wedding_agent.py tasks
-python3 wedding_agent.py draft guest-001
-python3 wedding_agent.py instinct guest-001
+python3 wedding_agent.py dashboard
 ```
 
-Edit `data.json` to enter your own wedding details. It is ignored by git; never commit real guest information.
+On Windows, use `copy data.example.json data.json` and `python` instead of `python3` if needed. The dashboard opens at `http://127.0.0.1:8765`, accessible only on your own computer.
 
 ## Commands
 
-- `summary` — aggregate counts and upcoming tasks
-- `guests` — show guest attendance/travel status
-- `tasks` — list task ownership and due dates
-- `draft GUEST_ID` — draft a personalized RSVP/travel coordination message, no sending
-- `instinct GUEST_ID` — output a structured handoff for Instinct to review and send, subject to its available permissions
-- `export-instinct` — print a privacy-minimized wedding status brief for use with Instinct
+```bash
+python3 wedding_agent.py summary
+python3 wedding_agent.py guests
+python3 wedding_agent.py tasks
+python3 wedding_agent.py draft guest-001 --kind rsvp
+python3 wedding_agent.py whatsapp guest-001 --kind travel
+python3 wedding_agent.py instinct guest-001 --kind accommodation
+python3 wedding_agent.py instinct-rules
+python3 wedding_agent.py dashboard
+```
 
-## Instinct support
+- `draft`: print a message for review.
+- `whatsapp`: open the named guest's WhatsApp chat with the message **prefilled**, no copy/paste necessary; **you review and press Send**. Requires a guest phone with international country code in *private* `data.json`.
+- `instinct`: open a draft in WhatsApp addressed to the Instinct agent number if `settings.instinct_whatsapp_number` has been configured locally; otherwise opens a generic WhatsApp share composer to select the Instinct chat. **The Instinct chat must first be connected separately.**
+- `instinct-rules`: open a proposed instruction set in WhatsApp for your Instinct chat, asking approval before messaging guests or acting on bookings.
+- `dashboard`: show a localhost-only guest list with no-copy-paste WhatsApp draft links.
 
-Instinct is a third-party messaging agent. As of November 2026, a stable public developer API for direct messaging could not be verified. This project **does not claim direct Instinct sending**, does not collect Instinct passwords or tokens, and never automatically sends messages. Its current integration is a **human-approved copy/paste handoff**. Do not share the full guest database with Instinct; give it the minimum recipient details and draft required for one message.
+All commands are opt-in. **No command automatically sends a WhatsApp message.**
 
-1. Run `python3 wedding_agent.py instinct guest-001`.
-2. Review and copy the generated instructions into your own Instinct chat.
-3. Ask Instinct to confirm the recipient and final content **before** sending.
-4. Verify delivery in your messaging app.
-5. If Instinct later publishes a documented API or remote MCP capability, implement it separately with scoped credentials, explicit consent, and audit logs.
+## Connecting Circles to Instinct (one-time account authorization)
 
-## Data model
+Circles advertises a one-tap Instinct connection on its own service. To use it, visit [Circles for Instinct](https://usecircles.app/en/agents/instinct), sign in, link **your** WhatsApp account following its on-screen steps, select **Connect Instinct**, and approve the connection in WhatsApp. The one-time pairing/permissions must be authorized by the WhatsApp account owner and **cannot be completed by this GitHub project or a remote ChatGPT chat**. Verify independently that you trust this third-party provider; Circles' linked-device approach is not the same as a Meta-official WhatsApp Business API integration.
 
-`data.example.json` demonstrates events, guests, accommodation, flights, vendors and tasks. It deliberately contains fictional records, no credentials, and no real wedding details.
+Once you have connected Instinct, send a rules handoff:
+```bash
+python3 wedding_agent.py instinct-rules
+```
 
-## Security
+For each guest message, the app can open Instinct's WhatsApp chat with the proposed instruction and recipient:
+```bash
+python3 wedding_agent.py instinct guest-001
+```
 
-- `data.json`, `.env`, backups and exported messages are excluded from Git.
-- Do not publish phone numbers, guest names, bookings, flight PNRs, addresses, or vendor contracts without consent.
-- Inspect every message before sending; do not mass-message guests without their consent.
-- This is a starter utility, not an autonomous sending service.
+**Limitation:** Whether Instinct can actually send a message via Circles depends on the permissions and capabilities you enable in Instinct/Circles. This repository has **no verified direct Instinct API integration or autonomous send functionality** and must not be represented as connected or able to deliver messages. You can instead use `whatsapp` for a one-click draft that you manually send.
 
-## Contributing
+## Optional read-only Circles diagnostic
 
-Open an issue or pull request. Add tests for new integrations and avoid dependencies on private accounts.
+If you have obtained a Circles-issued API credential from Circles, you may test read-only allowed-chat access by setting `CIRCLES_KEY` in your shell and running `python3 wedding_agent.py circles-check`. API functionality can change; this is optional and is not needed for the Instinct WhatsApp pairing described above. Never put tokens into GitHub or `data.json`.
 
-## License
+## Data format and guardrails
 
-MIT. See `LICENSE`.
+Use `data.example.json` as a template. All records in the example are intentionally fictional; `phone` is empty by default. Keep real event information in local `data.json`. `.gitignore` excludes this file and common exports. Git ignore rules do not retroactively protect any file already committed: always inspect `git status` before pushing.
+
+**Messaging safety:** confirm who will receive each message, the exact contents, and that the recipient agreed to this kind of outreach. Do not allow Instinct to message entire groups, make bookings, make purchases, or change reservations without your explicit approval. Avoid transmitting sensitive travel identifiers or full accommodation information.
+
+## Open-source license
+
+MIT — see [LICENSE](LICENSE). Contributions are welcome, but **never include real guest data in issues, screenshots, pull requests, or test fixtures**.
